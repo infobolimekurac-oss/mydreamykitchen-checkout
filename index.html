@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout – My Dreamy Kitchen</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal: #00b4b4;
+            --teal-dark: #008f8f;
+            --teal-light: #e0f7f7;
+            --text: #1a1a2e;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f8fafb;
+            --white: #ffffff;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo-circle svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--teal);
+        }
+
+        .header-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            color: var(--text);
+            letter-spacing: 0.01em;
+        }
+
+        .header-secure {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .header-secure svg { width: 14px; height: 14px; }
+
+        /* Layout */
+        .page-wrap {
+            max-width: 920px;
+            margin: 32px auto;
+            padding: 0 16px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .page-wrap { grid-template-columns: 1fr; margin: 16px auto; }
+            .order-sidebar { order: -1; }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 24px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .card-body { padding: 20px 24px; }
+
+        /* Order Summary Sidebar */
+        .order-sidebar {}
+
+        .product-row {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .product-img {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #d1d5db, #9ca3af);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-img svg { width: 32px; height: 32px; fill: #6b7280; }
+
+        .product-info { flex: 1; }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 3px;
+        }
+
+        .product-sub {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--teal-dark);
+        }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label { font-size: 15px; font-weight: 600; }
+        .total-amount { font-size: 20px; font-weight: 700; color: var(--teal-dark); }
+
+        .shipping-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--teal-light);
+            color: var(--teal-dark);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        /* Security badges */
+        .badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .badge {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 6px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .badge svg { width: 18px; height: 18px; color: var(--teal); }
+
+        /* Payment logos */
+        .payment-logos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .pay-logo {
+            height: 28px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .pay-logo.visa { color: #1a1f71; font-size: 13px; font-style: italic; }
+        .pay-logo.mc { gap: 2px; }
+        .pay-logo.amex { color: #016fca; font-size: 10px; }
+        .pay-logo.apple { color: #000; font-size: 11px; display: flex; gap: 4px; align-items: center; }
+        .pay-logo.gpay { font-size: 11px; display: flex; gap: 1px; }
+
+        /* Form */
+        .form-section { margin-bottom: 22px; }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+
+        .form-group { margin-bottom: 14px; }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(0, 180, 180, 0.12);
+        }
+
+        .card-input-wrap {
+            position: relative;
+        }
+
+        .card-input-wrap input {
+            padding-right: 50px;
+        }
+
+        .card-icon-wrap {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 20px;
+        }
+
+        /* Attestation / Terms Boxes */
+        .attestation-section {
+            background: #fffbeb;
+            border: 1.5px solid #fcd34d;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .attestation-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #92400e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .attestation-title svg { width: 14px; height: 14px; }
+
+        .checkbox-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-item:last-child { margin-bottom: 0; }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            min-width: 17px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            accent-color: var(--teal);
+            margin-top: 1px;
+        }
+
+        .checkbox-item label {
+            font-size: 12px;
+            line-height: 1.6;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .checkbox-item label a {
+            color: var(--teal-dark);
+            text-decoration: underline;
+        }
+
+        /* Pay button */
+        .pay-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--teal);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pay-btn:hover:not(:disabled) {
+            background: var(--teal-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 180, 180, 0.35);
+        }
+
+        .pay-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pay-btn svg { width: 16px; height: 16px; }
+
+        .billing-notice {
+            margin-top: 12px;
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .site-footer {
+            text-align: center;
+            padding: 28px 16px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .site-footer a {
+            color: var(--teal-dark);
+            text-decoration: none;
+        }
+
+        .site-footer a:hover { text-decoration: underline; }
+        .site-footer p { margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <div class="header-brand">
+        <div class="header-logo-circle">
+            <!-- Simple kitchen/utensil icon -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 2h-2a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h.5V21h2V11H19a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM8 3H6v5H4V3H2v5a4 4 0 0 0 3 3.87V21h2v-9.13A4 4 0 0 0 10 8V3H8z"/>
+            </svg>
+        </div>
+        <span class="header-name">My Dreamy Kitchen</span>
+    </div>
+    <div class="header-secure">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        SSL Secured Checkout
+    </div>
+</header>
+
+<div class="page-wrap">
+
+    <!-- Left: Form -->
+    <main>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Contact &amp; Shipping</span></div>
+            <div class="card-body">
+
+                <!-- Contact -->
+                <div class="form-section">
+                    <div class="section-label">Contact</div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone" placeholder="(555) 000-0000">
+                    </div>
+                </div>
+
+                <!-- Shipping -->
+                <div class="form-section">
+                    <div class="section-label">Shipping Address</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="firstName" placeholder="Jane" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="lastName" placeholder="Smith" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <input type="text" id="address" placeholder="123 Main Street" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apartment, suite, etc.</label>
+                        <input type="text" id="address2" placeholder="Apt 4B (optional)">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City *</label>
+                            <input type="text" id="city" placeholder="Atlanta" required>
+                        </div>
+                        <div class="form-group">
+                            <label>State *</label>
+                            <select id="state" required>
+                                <option value="">Select state</option>
+                                <option>Alabama</option>
+                                <option>Alaska</option>
+                                <option>Arizona</option>
+                                <option>Arkansas</option>
+                                <option>California</option>
+                                <option>Colorado</option>
+                                <option>Connecticut</option>
+                                <option>Delaware</option>
+                                <option>Florida</option>
+                                <option>Georgia</option>
+                                <option>Hawaii</option>
+                                <option>Idaho</option>
+                                <option>Illinois</option>
+                                <option>Indiana</option>
+                                <option>Iowa</option>
+                                <option>Kansas</option>
+                                <option>Kentucky</option>
+                                <option>Louisiana</option>
+                                <option>Maine</option>
+                                <option>Maryland</option>
+                                <option>Massachusetts</option>
+                                <option>Michigan</option>
+                                <option>Minnesota</option>
+                                <option>Mississippi</option>
+                                <option>Missouri</option>
+                                <option>Montana</option>
+                                <option>Nebraska</option>
+                                <option>Nevada</option>
+                                <option>New Hampshire</option>
+                                <option>New Jersey</option>
+                                <option>New Mexico</option>
+                                <option>New York</option>
+                                <option>North Carolina</option>
+                                <option>North Dakota</option>
+                                <option>Ohio</option>
+                                <option>Oklahoma</option>
+                                <option>Oregon</option>
+                                <option>Pennsylvania</option>
+                                <option>Rhode Island</option>
+                                <option>South Carolina</option>
+                                <option>South Dakota</option>
+                                <option>Tennessee</option>
+                                <option>Texas</option>
+                                <option>Utah</option>
+                                <option>Vermont</option>
+                                <option>Virginia</option>
+                                <option>Washington</option>
+                                <option>Washington D.C.</option>
+                                <option>West Virginia</option>
+                                <option>Wisconsin</option>
+                                <option>Wyoming</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ZIP Code *</label>
+                            <input type="text" id="zip" placeholder="31764" maxlength="5" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="country" disabled>
+                            <option value="US" selected>United States 🇺🇸</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header"><span class="card-title">Payment Information</span></div>
+            <div class="card-body">
+
+                <!-- Payment logos -->
+                <div class="payment-logos">
+                    <!-- VISA -->
+                    <div class="pay-logo visa">VISA</div>
+
+                    <!-- Mastercard primary -->
+                    <div class="pay-logo mc">
+                        <svg width="28" height="18" viewBox="0 0 38 24">
+                            <circle cx="15" cy="12" r="10" fill="#EB001B"/>
+                            <circle cx="23" cy="12" r="10" fill="#F79E1B"/>
+                            <path d="M19 4.8a10 10 0 0 1 0 14.4A10 10 0 0 1 19 4.8z" fill="#FF5F00"/>
+                        </svg>
+                    </div>
+
+                    <!-- Mastercard alternate -->
+                    <div class="pay-logo mc">
+                        <svg width="28" height="18" viewBox="0 0 38 24">
+                            <circle cx="15" cy="12" r="10" fill="#CC0000"/>
+                            <circle cx="23" cy="12" r="10" fill="#FF6600"/>
+                            <path d="M19 4.8a10 10 0 0 1 0 14.4A10 10 0 0 1 19 4.8z" fill="#CC3300"/>
+                        </svg>
+                    </div>
+
+                    <!-- Amex -->
+                    <div class="pay-logo amex" style="background:#016fca; color:#fff; border-color:#016fca;">
+                        <span style="font-size:9px; font-weight:800; letter-spacing:0.05em;">AMERICAN<br>EXPRESS</span>
+                    </div>
+
+                    <!-- Apple Pay -->
+                    <div class="pay-logo apple">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        <span style="font-size:11px; font-weight:700;">Pay</span>
+                    </div>
+
+                    <!-- Google Pay -->
+                    <div class="pay-logo gpay">
+                        <span style="color:#4285F4; font-weight:700; font-size:11px;">G</span><span style="color:#EA4335; font-weight:700; font-size:11px;">o</span><span style="color:#FBBC05; font-weight:700; font-size:11px;">o</span><span style="color:#4285F4; font-weight:700; font-size:11px;">g</span><span style="color:#34A853; font-weight:700; font-size:11px;">le</span>
+                        <span style="color:#5f6368; font-size:11px; font-weight:400; margin-left:3px;">Pay</span>
+                    </div>
+                </div>
+
+                <!-- Card fields -->
+                <div class="form-group">
+                    <label>Card Number *</label>
+                    <div class="card-input-wrap">
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry Date *</label>
+                        <input type="text" id="expiry" placeholder="MM / YY" maxlength="7" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CVV *</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Name on Card *</label>
+                    <input type="text" id="cardName" placeholder="Jane Smith" required>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Attestation / Terms Boxes -->
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header"><span class="card-title">Terms of Sale — Required</span></div>
+            <div class="card-body">
+                <div class="attestation-section">
+                    <div class="attestation-title">
+                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        Please read and accept all terms before completing your purchase
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="chk-terms" name="chk-terms">
+                        <label for="chk-terms">
+                            I have read and agree to the <a href="https://mydreamykitchen.com/policies/terms-of-service" target="_blank">Terms of Service</a>. I understand these terms govern my purchase and use of products from My Dreamy Kitchen.
+                        </label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="chk-refund" name="chk-refund">
+                        <label for="chk-refund">
+                            I have read and agree to the <a href="https://mydreamykitchen.com/policies/refund-policy" target="_blank">Refund Policy</a>. I understand the conditions under which refunds, returns, and replacements are offered.
+                        </label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="chk-privacy" name="chk-privacy">
+                        <label for="chk-privacy">
+                            I have read and agree to the <a href="https://mydreamykitchen.com/policies/privacy-policy" target="_blank">Privacy Policy</a>. I consent to the collection and use of my information as described therein.
+                        </label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="chk-charge" name="chk-charge">
+                        <label for="chk-charge">
+                            I authorize My Dreamy Kitchen to charge my payment method for the total amount shown. I confirm this is a one-time purchase — no subscription or recurring charges will apply. My card will be billed under the descriptor <strong>MyDreamyKitchen.com</strong>.
+                        </label>
+                    </div>
+                </div>
+
+                <button class="pay-btn" id="payBtn" disabled>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Complete Purchase — $49.90
+                </button>
+
+                <p class="billing-notice">
+                    Your payment is secured by 256-bit SSL encryption. My Dreamy Kitchen by LifePlus Books LLC · 235 Henry Hart Rd, Leslie, GA 31764 · 1-800-383-1338 · info@mydreamykitchen.com
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right: Order Summary -->
+    <aside class="order-sidebar">
+        <div class="card">
+            <div class="card-header"><span class="card-title">Order Summary</span></div>
+            <div class="card-body">
+                <div class="product-row">
+                    <div class="product-img" style="background: linear-gradient(135deg, #e0f7f7, #b2eded);">
+                        <svg width="38" height="38" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Cutting board body -->
+                            <rect x="8" y="10" width="28" height="34" rx="3" fill="#008f8f" opacity="0.85"/>
+                            <!-- Handle hole -->
+                            <ellipse cx="22" cy="14" rx="4" ry="2.5" fill="#e0f7f7" opacity="0.9"/>
+                            <!-- Surface lines (grain) -->
+                            <line x1="12" y1="20" x2="32" y2="20" stroke="#e0f7f7" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+                            <line x1="12" y1="25" x2="32" y2="25" stroke="#e0f7f7" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+                            <line x1="12" y1="30" x2="32" y2="30" stroke="#e0f7f7" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+                            <line x1="12" y1="35" x2="32" y2="35" stroke="#e0f7f7" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+                            <!-- Small knife accent -->
+                            <line x1="38" y1="16" x2="38" y2="38" stroke="#00b4b4" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M38 16 Q42 20 40 28 L38 28 Z" fill="#00b4b4" opacity="0.7"/>
+                        </svg>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">MyDreamyKitchen Titanium Cutting Board</div>
+                        <div class="product-sub">Physical Product · Free Shipping</div>
+                    </div>
+                    <div class="product-price">$49.90</div>
+                </div>
+
+                <div class="shipping-tag">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                    FREE SHIPPING INCLUDED
+                </div>
+
+                <hr class="divider">
+
+                <div class="total-row">
+                    <span class="total-label">Total (USD)</span>
+                    <span class="total-amount">$49.90</span>
+                </div>
+
+                <div class="badges">
+                    <div class="badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        SSL Secured
+                    </div>
+                    <div class="badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        256-bit Enc.
+                    </div>
+                    <div class="badge">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        Safe Pay
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:14px; font-size:11px; color:var(--muted); line-height:1.7; text-align:center; padding: 0 4px;">
+            <a href="https://mydreamykitchen.com/policies/contact-information" target="_blank" style="color:var(--teal-dark); text-decoration:none;">Contact</a> &nbsp;·&nbsp;
+            <a href="https://mydreamykitchen.com/policies/privacy-policy" target="_blank" style="color:var(--teal-dark); text-decoration:none;">Privacy</a> &nbsp;·&nbsp;
+            <a href="https://mydreamykitchen.com/policies/terms-of-service" target="_blank" style="color:var(--teal-dark); text-decoration:none;">Terms</a> &nbsp;·&nbsp;
+            <a href="https://mydreamykitchen.com/policies/refund-policy" target="_blank" style="color:var(--teal-dark); text-decoration:none;">Refunds</a>
+        </div>
+    </aside>
+
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <p>© 2026 My Dreamy Kitchen by LifePlus Books LLC. All Rights Reserved.</p>
+    <p>235 Henry Hart Rd, Leslie, GA 31764, United States · <a href="mailto:info@mydreamykitchen.com">info@mydreamykitchen.com</a> · 1-800-383-1338</p>
+</footer>
+
+<script>
+    // Card number formatting
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g, '').slice(0, 16);
+        e.target.value = v.match(/.{1,4}/g)?.join(' ') || v;
+    });
+
+    // Expiry formatting
+    document.getElementById('expiry').addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+        if (v.length >= 2) v = v.slice(0, 2) + ' / ' + v.slice(2);
+        e.target.value = v;
+    });
+
+    // CVV numbers only
+    document.getElementById('cvv').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // ZIP numbers only
+    document.getElementById('zip').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Enable pay button only when ALL 4 checkboxes are checked
+    const checkboxes = ['chk-terms', 'chk-refund', 'chk-privacy', 'chk-charge'];
+    const payBtn = document.getElementById('payBtn');
+
+    function updatePayBtn() {
+        const allChecked = checkboxes.every(id => document.getElementById(id).checked);
+        payBtn.disabled = !allChecked;
+    }
+
+    checkboxes.forEach(id => {
+        document.getElementById(id).addEventListener('change', updatePayBtn);
+    });
+
+    // Prevent form submission (placeholder only)
+    payBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Checkout is being processed. Thank you for your order!');
+    });
+</script>
+</body>
+</html>
